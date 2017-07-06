@@ -1,0 +1,10 @@
+	Guide1
+ The first trap is at 10Y^2!E6. But if you are organic, it is 10 approxamatly 10 steps away. The trap works as such:
+ 1. The left wall will emit a deconstructor pulse. It will look as though a wall is generated at the left wall
+ and traveling to the right wall.
+ 2. Do not let it touch you. Anything the desconstructor pulse touches, it deletes.
+ 3. The button to turn the trap off is on the other side of the wall marcked with the character "E".
+ 4. The trap has a refractory period of 1 seconds. Meaning you have 30 seconds to find and press the exit.
+ 5. More importantly, it means you have 1 seconds to travel over and around the trap, before it continues forward.
+
+		-Good luck-
