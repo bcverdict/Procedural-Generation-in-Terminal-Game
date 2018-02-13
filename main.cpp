@@ -16,7 +16,8 @@ int starty = 0;
 
 int main()
 {
-//	PlaySound("music.wav", NULL, SND_FILENAME|SND_LOOP|SND_ASYNC);
+	//PlaySound("music", NULL, SND_LOOP|SND_ASYNC);
 	Path P;
+
 	return 0;
 }

@@ -14,6 +14,7 @@ mutex mu;
 Path::Path()
 {
 	TT1 = false;
+	Exit = false;
 	initscr();
 	noecho();
 	D = new Dialog();
@@ -123,6 +124,9 @@ void Path::MenuSwitch(WINDOW * win, int Screen, int choice)
 			wrefresh(win);
 		}
 	}
+
+	wclear(win);
+	wrefresh(win);
 }
 void Path::PWindow(char * Menu[3])
 {
@@ -140,7 +144,7 @@ void Path::PWindow(char * Menu[3])
 
 void Path::Wall()
 {
-	while(1)
+	while(!Exit)
 	{
 		if(m_Counter >= 54)
 		{
@@ -156,16 +160,17 @@ void Path::Wall()
 					m_Field[i][j] = ".";
 				}
 				Update();
-				sleep_for(nanoseconds(1000));
-				sleep_until(system_clock::now()+seconds(1));
-				if(m_StartCol == 0)
-					{
+				if(m_StartCol == j)
+				{
+					Exit = true;
 					break;
 				}
-			}
-			if(m_Field[m_StartRow][m_StartCol] == ".")
-			{
-				break;
+				sleep_until(system_clock::now()+seconds(1));
+				if(m_StartCol == 0)
+				{
+					Exit = true;
+					break;
+				}
 			}
 			if(m_StartCol == 0)
 			{
@@ -174,7 +179,65 @@ void Path::Wall()
 		}
 	}
 }
-
+void Path::Ending()
+{
+	while(1)
+	{
+		if(Exit)
+		{
+			ifstream InFile("Title.txt");
+			string Cover((istreambuf_iterator<char>(InFile)), istreambuf_iterator<char>());
+			const char * TitleValue = Cover.c_str();
+			initscr();
+			WINDOW * Top = newwin(10, 82, 0, 40);
+			refresh();
+			mvwprintw(Top, 1, 1, TitleValue);
+			box(Top, 0, 0);
+			int sizex = 10;
+			int sizey = 82;
+			int spacey = 40;
+			int titlex = 1;
+			for(int x = 0; x<17; x++)
+			{
+				if(x>12)
+				{
+					sizex += 1;
+				}
+				sizex += 1;
+				sizey += 2;
+				spacey -= 1;
+				wclear(Top);
+				wrefresh(Top);
+				Top = newwin(sizex, sizey, x, spacey);
+				refresh();
+				box(Top, 0, 0);
+				wrefresh(Top);
+				sleep_until(system_clock::now()+nanoseconds(500000000));
+				if(x == 16)
+				{
+					for(sizey; sizey > 38; sizey-=8)
+					{
+						wclear(Top);
+						wrefresh(Top);
+						Top = newwin(sizex, sizey, x, spacey);
+						refresh();
+						box(Top, 0, 0);
+						wrefresh(Top);
+						sleep_until(system_clock::now()+nanoseconds(500000000));
+					}
+				}
+			}
+			wclear(Top);
+			ifstream DoorFile("Door.txt");
+			string Door((istreambuf_iterator<char>(DoorFile)), istreambuf_iterator<char>());
+			const char * DoorValue = Door.c_str();
+			mvwprintw(Top, 0, 0, DoorValue);
+			wrefresh(Top);
+			sleep_until(system_clock::now()+seconds(2));
+			break;
+		}
+	}
+}
 void Path::Keys()
 {
 	initscr();
@@ -186,72 +249,74 @@ void Path::Keys()
 	Update();
 	keypad(Playwin, true);
 	thread t1 = thread(&Path::Wall, this);
-	while(1)
+	thread t2 = thread(&Path::Ending, this);
+	while(!Exit)
 	{
 		int Arrows = wgetch(Playwin);
 		switch(Arrows)
 		{
-
-			case KEY_UP:
-				m_Counter += 1;
-				if(m_Field[m_StartRow-1][m_StartCol] == "T")
-				{
-					TokenKeys();
-					box(Playwin, 0, 0);
-					Update();
-				}
-				else if((m_Field[m_StartRow-1][m_StartCol]!=".")&&(m_StartRow > 3))
-				{
-					m_Field[m_StartRow][m_StartCol]=" ";
-					m_StartRow-=1;
-					m_Field[m_StartRow][m_StartCol]="1";
-					Update();
-				}
-				else if((m_Field[m_StartRow-1][m_StartCol]!=".")&&(m_StartRow == 3))
-				{
-					MovementDown();
-					Sky();
-					Update();
-				}
-			break;
-			case KEY_RIGHT:
-				if(m_Field[m_StartRow][m_StartCol + 1] == "T")
-				{
-					TokenKeys();
-					box(Playwin, 0, 0);
-					Update();
-				}
-				else if((m_Field[m_StartRow][m_StartCol+1]!=".")&&(m_StartCol < m_FieldCol - 1))
-				{
-					m_Field[m_StartRow][m_StartCol]=" ";
-					m_StartCol+=1;
-					m_Field[m_StartRow][m_StartCol]="1";
-					Update();
-				}
-			break;
-			case KEY_DOWN:
-				m_Counter -= 1;
-				if(m_Field[m_StartRow+1][m_StartCol] == "T")
-				{
-					TokenKeys();
-					box(Playwin, 0, 0);
-					Update();
-				}
-				else if((m_Field[m_StartRow+1][m_StartCol]!=".")&&(m_StartRow < m_FieldRow - 3))
-				{
-					m_Field[m_StartRow][m_StartCol]=" ";
-					m_StartRow+=1;
-					m_Field[m_StartRow][m_StartCol]="1";
-					Update();
-				}
-				else if((m_Field[m_StartRow+1][m_StartCol]!=".")&&(m_StartRow == m_FieldRow - 3))
-				{
-					MovementUp();
-					Ground();
-					Update();
-				}
-			break;
-			case KEY_LEFT:
+			if(!Exit)
+			{
+				case KEY_UP:
+					m_Counter += 1;
+					if(m_Field[m_StartRow-1][m_StartCol] == "T")
+					{
+						TokenKeys();
+						box(Playwin, 0, 0);
+						Update();
+					}
+					else if((m_Field[m_StartRow-1][m_StartCol]!=".")&&(m_StartRow > 3))
+					{
+						m_Field[m_StartRow][m_StartCol]=" ";
+						m_StartRow-=1;
+						m_Field[m_StartRow][m_StartCol]="1";
+						Update();
+					}
+					else if((m_Field[m_StartRow-1][m_StartCol]!=".")&&(m_StartRow == 3))
+					{
+						MovementDown();
+						Sky();
+						Update();
+					}
+				break;
+				case KEY_RIGHT:
+					if(m_Field[m_StartRow][m_StartCol + 1] == "T")
+					{
+						TokenKeys();
+						box(Playwin, 0, 0);
+						Update();
+					}
+					else if((m_Field[m_StartRow][m_StartCol+1]!=".")&&(m_StartCol < m_FieldCol - 1))
+					{
+						m_Field[m_StartRow][m_StartCol]=" ";
+						m_StartCol+=1;
+						m_Field[m_StartRow][m_StartCol]="1";
+						Update();
+					}
+				break;
+				case KEY_DOWN:
+					m_Counter -= 1;
+					if(m_Field[m_StartRow+1][m_StartCol] == "T")
+					{
+						TokenKeys();
+						box(Playwin, 0, 0);
+						Update();
+					}
+					else if((m_Field[m_StartRow+1][m_StartCol]!=".")&&(m_StartRow < m_FieldRow - 3))
+					{
+						m_Field[m_StartRow][m_StartCol]=" ";
+						m_StartRow+=1;
+						m_Field[m_StartRow][m_StartCol]="1";
+						Update();
+					}
+					else if((m_Field[m_StartRow+1][m_StartCol]!=".")&&(m_StartRow == m_FieldRow - 3))
+					{
+						MovementUp();
+						Ground();
+						Update();
+					}
+				break;
+				case KEY_LEFT:
 				if(m_Field[m_StartRow][m_StartCol-1] == "T")
 				{
 					TokenKeys();
@@ -265,22 +330,23 @@ void Path::Keys()
 					m_Field[m_StartRow][m_StartCol]="1";
 					Update();
 				}
-			break;
-			case 105:
-			{		
-				box(InvWin, 0, 0);
-				Des->Print(InvWin);
-				wclear(InvWin);
-				wrefresh(InvWin);
+				break;
+				case 105:
+				{		
+					box(InvWin, 0, 0);
+					Des->Print(InvWin);
+					wclear(InvWin);
+					wrefresh(InvWin);
+				}
+				break;
+				default:
+				break;
 			}
-			break;
-			default:
-			break;
 		}
 	}
 	t1.join();
+	t2.join();
 	endwin();
-	
 }
 void Path::Update()
 {
@@ -351,7 +417,7 @@ void Path::Sky()
 	}
 	string i = to_string(m_Counter);
 	const char  * number = i.c_str();
-	mvwprintw(Playwin, 0, 0, number);
+//	mvwprintw(Playwin, 0, 0, number);
 }
 
 void Path::Ground()
@@ -372,7 +438,7 @@ void Path::Ground()
 	}
 	string i = to_string(m_Counter);
 	const char  * number = i.c_str();
-	mvwprintw(Playwin, 0, 0, number);
+//	mvwprintw(Playwin, 0, 0, number);
 }
 void Path::MovementDown()
 {

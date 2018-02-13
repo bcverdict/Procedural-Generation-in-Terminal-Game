@@ -1,6 +1,14 @@
 #include "Designs.h"
+#include <chrono>
+#include <thread>
+#include <iostream>
 #include <fstream>
+#define WIDTH 60
+#define HEIGHT 50
+
 using namespace std;
+using namespace chrono;
+using namespace this_thread;
 Designs::Designs()
 {
 	m_Front = nullptr;

@@ -14,8 +14,9 @@ class Path
 		~Path();
 		void MenuSwitch(WINDOW * win, int Screen, int choice);
 		void PWindow(char * Menu[3]);
-		void Keys();
 		void Wall();
+		void Ending();
+		void Keys();
 		void Update();
 		void Sky();
 		void TokenKeys();
@@ -41,6 +42,7 @@ class Path
 		bool TT1;
 		WINDOW * InvWin;
 		bool TalkedTo1;
+		bool Exit;
 		Dialog * D;
 		Highlight * H;
 		Designs * Des;
