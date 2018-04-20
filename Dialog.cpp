@@ -202,7 +202,6 @@ void Dialog::Chat(int counter, Designs * Des)
 						       Boxes(dialog, "h^W#89m2@", "Oh! I almost forgot! Here!");
 						       Des->Guides(1);
 					       }
-						
 					}		
 				}
 				TalkedTo1 = true;

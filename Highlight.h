@@ -5,7 +5,7 @@ class Highlight
 {
 	public:
 		Highlight();
-		print_menu(WINDOW * win, char * Menu[], int size);
+		int print_menu(WINDOW * win, char * Menu[], int size);
 	private:
 };
 #endif

@@ -45,10 +45,10 @@ void Designs::Guides(int i)
 	getch();
 	werase(WinGuide);
 	wrefresh(WinGuide);
-	delete WinGuide;
+//	delete WinGuide;
 	refresh();
-	Add(Guide, "Guide1");
-	m_size += 1;
+//	Add(Guide, "Guide1");
+//	m_size += 1;
 }
 int Designs::VecPrint(WINDOW * win)
 {
