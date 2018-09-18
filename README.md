@@ -10,3 +10,5 @@ To see how your conversation effects the game and how our fictitious Mr.T respon
 ### Animations
 At the end of the game, win or lose, you will be presented with a handmade animation of the title EXIT turn into a door.
 ![screenshot2](https://user-images.githubusercontent.com/25839788/45655971-8432e480-baa8-11e8-9100-df5149c835e9.png)
+### Music
+Music is also present in the game but for copyright reasons I cannot upload it to github.
